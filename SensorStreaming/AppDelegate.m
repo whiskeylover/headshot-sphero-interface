@@ -123,7 +123,7 @@
         
         detected = [humanDetected boolValue];
         
-        NSLog(@"%f",xHuman);
+        //NSLog(@"%f",xHuman);
     
         }
     @catch (NSException *exception) {
@@ -260,6 +260,9 @@
         [self.gyroYawField setStringValue:[NSString stringWithFormat:@"%.0f", attitudeData.yaw]];
         
         
+        //[RKRawMotorValuesCommand sendCommandWithLeftMode:2 leftPower:255 rightMode:1 rightPower:0];
+        
+        //return;
         
         // If no human detected, return
         if(!detected)
@@ -269,12 +272,14 @@
 
             return;
         }
-        float xTurret = 1, yTurret = 0, zTurret = 0;
+        float xTurret = 0, yTurret = 0, zTurret = 0;
         float yawHuman, yawTurret, pitchHuman, pitchTurret;
         
         // Calculate yawHuman
         yawHuman = atan((xHuman - xTurret) / (zHuman - zTurret));
         yawHuman = yawHuman * 180 / M_PI;
+        
+        NSLog(@"Human yaw is %f", yawHuman);
                 
         // Calculate yawTurret
         yawTurret = attitudeData.yaw;
@@ -283,6 +288,7 @@
         if(abs(yawHuman - yawTurret) <= 5)
         {
             [RKBackLEDOutputCommand sendCommandWithBrightness:1];
+            [RKRawMotorValuesCommand sendCommandWithLeftMode:0 leftPower:0 rightMode:0 rightPower:0];
         }
         
         else
@@ -292,12 +298,12 @@
             // if yawTurret < yawHuman, rotate clockwise
             if(yawTurret < yawHuman)
             {
-                [RKRawMotorValuesCommand sendCommandWithLeftMode:0 leftPower:0 rightMode:1 rightPower:255];                
+                [RKRawMotorValuesCommand sendCommandWithLeftMode:2 leftPower:127 rightMode:1 rightPower:0];
             }
             // if yawTurret > yawHuman, rotate counterclockwise
             if(yawTurret > yawHuman)
             {
-                [RKRawMotorValuesCommand sendCommandWithLeftMode:0 leftPower:0 rightMode:2 rightPower:255];
+                [RKRawMotorValuesCommand sendCommandWithLeftMode:1 leftPower:127 rightMode:1 rightPower:0];
             }
         }
         
